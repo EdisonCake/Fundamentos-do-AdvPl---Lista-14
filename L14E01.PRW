@@ -27,7 +27,7 @@ User Function ComCust()
     aAdd(aDados, {'A1_EST',     'SP', NIL})
     aAdd(aDados, {'A1_TEL',     '99999999', NIL})
 
-    MsExecAuto({|x, y| MATA030(x, y)}, aDados, noPer)
+    MsExecAuto({|x, y| MATA030(x, y)}, aDados, nOper)
 
     if lMsErroAuto
         MostraErro()
