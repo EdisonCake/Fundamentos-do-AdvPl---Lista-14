@@ -15,7 +15,6 @@
     @type  Function
     @author Edison Cake
     @since 05/05/2023
-    @see [Terminal de Informação](https://terminaldeinformacao.com/2021/12/16/como-fazer-a-importacao-de-um-arquivo-csv-ou-txt-via-advpl/)
     /*/
 User Function LoadProd()
     local aArea     := GetArea()
