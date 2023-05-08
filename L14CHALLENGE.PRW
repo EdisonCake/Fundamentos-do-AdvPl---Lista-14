@@ -50,6 +50,7 @@ Static Function ComProd()
     local aLine := {}
     local oFile := FwFileReader():New(cFile)
 
+    //? Variáveis a serem atribuídas com as informações do arquivo .CSV.
     local cCod      := ""
     local cDesc     := ""
     local cTipo     := ""
@@ -57,13 +58,18 @@ Static Function ComProd()
     local nValor    := 0
     local cAtivo    := ""
 
+    //? Verifica se foi possível abrir o arquivo.
     if oFile:Open()
+
+        //? Verifica se o arquivo não está vazio.
         if !oFile:Eof()
             while oFile:HasLine()
 
+                //? É atribuída a linha do arquivo ä uma variável de texto, e após, a mesma é transformada em array.
                 cLine := oFile:GetLine()
                 aLine := strtokarr(cLine, ";")
-    
+
+                //? Cada informação é atribuída à uma variável correspondente.
                 cCod := aLine[nCodigo]
                 cDesc := SubsTr(aLine[nDesc], 1, 30)
                 cTipo := aLine[nTipo]
@@ -71,12 +77,18 @@ Static Function ComProd()
                 nValor := val(aLine[nPreco])
                 cAtivo := aLine[nAtivo]
 
+                //? Aqui é verificado se não é o cabeçalho do arquivo, se o mesmo está ativo e se a descrição é valida.
+                //? Se sim, é chamada a rotina para fazer a gravação das informações.
                 if lower(cCod) != "codigo" .and. cAtivo != "I" .and. alltrim(cDesc) != "."
                     NewProd(cCod, cDesc, cTipo, cUM, nValor)
                 endif
 
             end do
+        else
+            MsgStop("Eu sou uma piada pra você? O arquivoi está vazio!", "Ah pronto...")
         endif
+    else
+        MsgStop("O arquivo não pode ser aberto.", "Ah não...! :(")
     endif
 
     oFile:Close()
@@ -86,7 +98,7 @@ Static Function ComProd()
 Return 
 
 /*/{Protheus.doc} NewProd
-    Função de rotina automática para a gravação de(s) produtos importador por .csv.
+    Função de rotina automática para a gravação de(s) produtos importador por .csv que foram passados por parâmetro.
     @type  Function
     @author Edison Cake
     @since 05/05/2023
@@ -101,8 +113,10 @@ Static Function NewProd(cCod, cDesc, cTipo, cUM, nValor)
     local nOper  := 3 //? Operação de Inclusão
     private lMsErroAuto := .F.
 
+    //? A preparação do ambiente auxilia para que não precisemos abrir o Protheus para realizar a busca pelas informações.
     PREPARE ENVIRONMENT EMPRESA '99' FILIAL '01' MODULO 'COM'
 
+    //? Adicionados os dados em um array para que os mesmos sejam gravados no banco de dados.
     aAdd(aDados, {'B1_FILIAL',  FwFilial('SB1'), NIL})
     aAdd(aDados, {'B1_COD',  cCod, NIL})
     aAdd(aDados, {'B1_DESC',  cDesc, NIL})
@@ -111,6 +125,7 @@ Static Function NewProd(cCod, cDesc, cTipo, cUM, nValor)
     aAdd(aDados, {'B1_PRV1',  nValor, NIL})
     aAdd(aDados, {'B1_LOCPAD',  '01', NIL})
 
+    //? Função MsExecAuto que executa a rotina automática com base na operação pré-definida (nesse caso, inclusão).
     MsExecAuto({|x, y| MATA010(x, y)}, aDados, nOper)
 
     if lMsErroAuto
